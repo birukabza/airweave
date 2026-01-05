@@ -284,10 +284,9 @@ async def _check_and_enforce_rate_limit(
     ------
         RateLimitExceededException: If rate limit is exceeded.
     """
-    # Only apply rate limiting to API key authentication
-    # Auth0 (access token) and system auth are excluded
-    if ctx.auth_method in [AuthMethod.AUTH0, AuthMethod.SYSTEM]:
-        ctx.logger.debug(f"Skipping rate limit for auth method: {ctx.auth_method.value}")
+    # Only skip for internal system auth
+    if ctx.auth_method == AuthMethod.SYSTEM:
+        ctx.logger.debug("Skipping rate limit for system authentication")
         request.state.rate_limit_result = RateLimitResult(
             allowed=True,
             retry_after=0.0,
